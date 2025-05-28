@@ -1,20 +1,7 @@
-"use client";
-import { useEffect, useState } from "react";
 import Ballpit from "../components/Ballpit";
 import { Cover } from "../components/cover";
 
 export default function Hero() {
-  const [isMobile, setIsMobile] = useState(false);
-
-  useEffect(() => {
-    const checkMobile = () => {
-      setIsMobile(window.innerWidth < 768);
-    };
-
-    checkMobile();
-    window.addEventListener("resize", checkMobile);
-    return () => window.removeEventListener("resize", checkMobile);
-  }, []);
   return (
     <section className="py-16  overflow-x-clip h-[80vh]">
       <div
@@ -27,11 +14,11 @@ export default function Hero() {
         }}
       >
         <Ballpit
-          count={isMobile ? 80 : 120}
-          gravity={isMobile ? 1.2 : 0.9}
-          friction={isMobile ? 0.99 : 0.9975}
-          wallBounce={0.95}
-          followCursor={false}
+          count={120}
+          gravity={0.2} // Increase gravity on mobile
+          friction={1} // Reduce friction on mobile
+          wallBounce={0.5}
+          followCursor={true}
           colors={[
             "#0fd8d7", // primary aqua
             "#0fcac8", // slightly darker aqua
@@ -40,6 +27,7 @@ export default function Hero() {
             "#ffffff", // white for contrast
             "#1b1b1f", // deep neutral gray
           ]}
+          maxVelocity={1} // Higher maximum speed
         />
       </div>
       <div className="container mx-auto relative ">
