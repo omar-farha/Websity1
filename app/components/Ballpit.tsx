@@ -207,9 +207,13 @@ class X {
       this.size.wHeight =
         2 * Math.tan(fovRad / 2) * this.camera.position.length();
       this.size.wWidth = this.size.wHeight * this.camera.aspect;
-    } else if ((this.camera as any).isOrthographicCamera) {
-      // Cast to any to access orthographic properties
-      const cam = this.camera as any;
+    } else if (this.camera.type === "OrthographicCamera") {
+      const cam = this.camera as unknown as {
+        top: number;
+        bottom: number;
+        left: number;
+        right: number;
+      };
       this.size.wHeight = cam.top - cam.bottom;
       this.size.wWidth = cam.right - cam.left;
     }
@@ -240,11 +244,13 @@ class X {
 
   #onIntersection(entries: IntersectionObserverEntry[]) {
     this.#isAnimating = entries[0].isIntersecting;
+    // eslint-disable-next-line @typescript-eslint/no-unused-expressions
     this.#isAnimating ? this.#startAnimation() : this.#stopAnimation();
   }
 
   #onVisibilityChange() {
     if (this.#isAnimating) {
+      // eslint-disable-next-line @typescript-eslint/no-unused-expressions
       document.hidden ? this.#stopAnimation() : this.#startAnimation();
     }
   }
@@ -279,22 +285,34 @@ class X {
   clear() {
     this.scene.traverse((obj) => {
       if (
-        (obj as any).isMesh &&
+        obj.type === "Mesh" &&
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         typeof (obj as any).material === "object" &&
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         (obj as any).material !== null
       ) {
-        Object.keys((obj as any).material).forEach((key) => {
-          const matProp = (obj as any).material[key];
-          if (
-            matProp &&
-            typeof matProp === "object" &&
-            typeof matProp.dispose === "function"
-          ) {
-            matProp.dispose();
-          }
-        });
-        (obj as any).material.dispose();
-        (obj as any).geometry.dispose();
+        const mesh = obj as unknown as {
+          material: Record<string, unknown> | { dispose: () => void };
+          geometry: { dispose: () => void };
+        };
+
+        if (typeof mesh.material === "object") {
+          Object.keys(mesh.material).forEach((key) => {
+            const matProp = mesh.material[key];
+            if (
+              matProp &&
+              typeof matProp === "object" &&
+              "dispose" in matProp
+            ) {
+              (matProp as { dispose: () => void }).dispose();
+            }
+          });
+        }
+
+        if ("dispose" in mesh.material) {
+          (mesh.material as { dispose: () => void }).dispose();
+        }
+        mesh.geometry.dispose();
       }
     });
     this.scene.clear();
@@ -304,7 +322,12 @@ class X {
     this.#onResizeCleanup();
     this.#stopAnimation();
     this.clear();
-    this.#postprocessing?.dispose();
+    if (
+      this.#postprocessing &&
+      typeof this.#postprocessing.dispose === "function"
+    ) {
+      this.#postprocessing.dispose();
+    }
     this.renderer.dispose();
     this.isDisposed = true;
   }
@@ -484,7 +507,7 @@ class Y extends MeshPhysicalMaterial {
     thicknessScale: { value: 10 },
   };
 
-  constructor(params: any) {
+  constructor(params: Record<string, unknown>) {
     super(params);
     this.defines = { USE_UV: "" };
     this.onBeforeCompile = (shader) => {
@@ -528,7 +551,7 @@ class Y extends MeshPhysicalMaterial {
       if (this.onBeforeCompile2) this.onBeforeCompile2(shader);
     };
   }
-  onBeforeCompile2?: (shader: any) => void;
+  onBeforeCompile2?: (shader: Record<string, unknown>) => void;
 }
 
 /* =========================================================
@@ -867,7 +890,28 @@ function createBallpit(
 interface BallpitProps {
   className?: string;
   followCursor?: boolean;
-  [key: string]: any;
+  count?: number;
+  colors?: number[];
+  ambientColor?: number;
+  ambientIntensity?: number;
+  lightIntensity?: number;
+  materialParams?: {
+    metalness?: number;
+    roughness?: number;
+    clearcoat?: number;
+    clearcoatRoughness?: number;
+  };
+  minSize?: number;
+  maxSize?: number;
+  size0?: number;
+  gravity?: number;
+  friction?: number;
+  wallBounce?: number;
+  maxVelocity?: number;
+  maxX?: number;
+  maxY?: number;
+  maxZ?: number;
+  controlSphere0?: boolean;
 }
 
 const Ballpit: React.FC<BallpitProps> = ({
@@ -892,8 +936,7 @@ const Ballpit: React.FC<BallpitProps> = ({
         spheresInstanceRef.current.dispose();
       }
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [followCursor, props]);
 
   return <canvas className={`${className} w-full h-full`} ref={canvasRef} />;
 };
