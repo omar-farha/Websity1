@@ -48,10 +48,16 @@ interface SizeData {
   pixelRatio: number;
 }
 
+interface PostProcessing {
+  render: () => void;
+  setSize: (width: number, height: number) => void;
+  dispose?: () => void;
+}
+
 class X {
   // Private fields
   #config: XConfig;
-  #postprocessing: any;
+  #postprocessing?: PostProcessing;
   #resizeObserver?: ResizeObserver;
   #intersectionObserver?: IntersectionObserver;
   #resizeTimer?: number;
@@ -225,9 +231,11 @@ class X {
   get postprocessing() {
     return this.#postprocessing;
   }
-  set postprocessing(value: any) {
+  set postprocessing(value: PostProcessing | undefined) {
     this.#postprocessing = value;
-    this.render = value.render.bind(value);
+    if (value) {
+      this.render = value.render.bind(value);
+    }
   }
 
   #onIntersection(entries: IntersectionObserverEntry[]) {
@@ -314,7 +322,6 @@ class X {
 
 /* =========================================================
    Class W – Physics for Ballpit
-   (Assumed to be defined in the code below)
    ========================================================= */
 interface WConfig {
   count: number;
@@ -460,8 +467,16 @@ class W {
 /* =========================================================
    Class Y – Custom Shader Material
    ========================================================= */
+interface CustomShaderUniforms {
+  thicknessDistortion: { value: number };
+  thicknessAmbient: { value: number };
+  thicknessAttenuation: { value: number };
+  thicknessPower: { value: number };
+  thicknessScale: { value: number };
+}
+
 class Y extends MeshPhysicalMaterial {
-  uniforms: { [key: string]: { value: any } } = {
+  uniforms: CustomShaderUniforms = {
     thicknessDistortion: { value: 0.1 },
     thicknessAmbient: { value: 0 },
     thicknessAttenuation: { value: 0.1 },
@@ -668,18 +683,6 @@ function isInside(rect: DOMRect) {
   );
 }
 
-const { randFloat, randFloatSpread } = MathUtils;
-const F = new Vector3();
-const I = new Vector3();
-const O = new Vector3();
-const V = new Vector3();
-const B = new Vector3();
-const N = new Vector3();
-const _ = new Vector3();
-const j = new Vector3();
-const H = new Vector3();
-const T = new Vector3();
-
 /* =========================================================
    Class Z – Instanced Mesh for Spheres
    ========================================================= */
@@ -788,9 +791,13 @@ interface CreateBallpitReturn {
   dispose: () => void;
 }
 
+interface BallpitConfig extends Partial<typeof XConfig> {
+  followCursor?: boolean;
+}
+
 function createBallpit(
   canvas: HTMLCanvasElement,
-  config: any = {}
+  config: BallpitConfig = {}
 ): CreateBallpitReturn {
   const threeInstance = new X({
     canvas,
@@ -821,7 +828,7 @@ function createBallpit(
       spheres.config.controlSphere0 = false;
     },
   });
-  function initialize(cfg: any) {
+  function initialize(cfg: BallpitConfig) {
     if (spheres) {
       threeInstance.clear();
       threeInstance.scene.remove(spheres);
@@ -860,7 +867,6 @@ function createBallpit(
 interface BallpitProps {
   className?: string;
   followCursor?: boolean;
-  // Additional props for createBallpit
   [key: string]: any;
 }
 
