@@ -8,7 +8,7 @@ export default function Hero() {
         style={{
           position: "absolute",
           overflow: "hidden",
-          //   minHeight: "70vh",
+          minHeight: "70vh",
           maxHeight: "72%",
           width: "100%",
         }}

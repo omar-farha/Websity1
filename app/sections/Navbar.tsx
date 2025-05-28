@@ -1,5 +1,6 @@
 import Image from "next/image";
 import logo from "@/app/assets/images/weblogo.png";
+
 const navLinks = [
   { label: "Home", href: "#" },
   { label: "Features", href: "#features" },
@@ -9,15 +10,15 @@ const navLinks = [
 
 export default function Navbar() {
   return (
-    <div>
+    <nav>
       <section className="py-4 lg:py-8">
-        <div className=" container sm:max-w-7xl md:max-w-4xl lg:max-w-5xl  mx-auto md:px-8 px-6 ">
+        <div className="container sm:max-w-7xl md:max-w-4xl lg:max-w-5xl mx-auto md:px-8 px-6">
           <div className="grid grid-cols-2 lg:grid-cols-3 border border-white/15 rounded-full p-2 px-4 md:pr-2 items-center">
-            <div className="">
+            <div>
               <Image
                 src={logo}
                 alt="logo"
-                className="h-10 md:h-15 w-auto "
+                className="h-10 md:h-15 w-auto"
                 priority
               />
             </div>
@@ -50,13 +51,13 @@ export default function Navbar() {
               <button className="border border-white h-12 rounded-full px-6 font-medium hidden md:inline-flex items-center">
                 Log In
               </button>
-              <button className="border border-[#0fd8d7] bg-[#0fd8d7]  text-neutral-950 h-12 rounded-full px-6 font-medium hidden md:inline-flex items-center">
+              <button className="border border-[#0fd8d7] bg-[#0fd8d7] text-neutral-950 h-12 rounded-full px-6 font-medium hidden md:inline-flex items-center">
                 Sign up
               </button>
             </div>
           </div>
         </div>
       </section>
-    </div>
+    </nav>
   );
 }
