@@ -2,8 +2,6 @@ import Ballpit from "../components/Ballpit";
 import { Cover } from "../components/cover";
 
 export default function Hero() {
-  const isMobile = typeof window !== "undefined" && window.innerWidth < 768;
-
   return (
     <section className="py-16  overflow-x-clip h-[80vh]">
       <div
@@ -16,11 +14,11 @@ export default function Hero() {
         }}
       >
         <Ballpit
-          count={isMobile ? 150 : 120}
-          gravity={isMobile ? 1.2 : 0.9} // Increase gravity on mobile
-          friction={isMobile ? 0.99 : 0.9975} // Reduce friction on mobile
-          wallBounce={0.95}
-          followCursor={false}
+          count={120}
+          gravity={0.2} // Increase gravity on mobile
+          friction={1} // Reduce friction on mobile
+          wallBounce={0.5}
+          followCursor={true}
           colors={[
             "#0fd8d7", // primary aqua
             "#0fcac8", // slightly darker aqua

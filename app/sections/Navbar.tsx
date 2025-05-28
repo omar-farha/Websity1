@@ -4,7 +4,7 @@ import logo from "@/app/assets/images/weblogo.png";
 const navLinks = [
   { label: "Home", href: "#" },
   { label: "Services", href: "#services" },
-  { label: "Integrations", href: "#integrations" },
+  { label: "Projects", href: "#projects" },
   { label: "FAQs", href: "#faqs" },
 ];
 
@@ -48,11 +48,11 @@ export default function Navbar() {
                 <line x1="3" y1="6" x2="21" y2="6" />
                 <line x1="3" y1="18" x2="21" y2="18" />
               </svg>
-              <button className="border border-white h-12 rounded-full px-6 font-medium hidden md:inline-flex items-center">
+              {/* <button className="border border-white h-12 rounded-full px-6 font-medium hidden md:inline-flex items-center">
                 Log In
-              </button>
+              </button> */}
               <button className="border border-[#0fd8d7] bg-[#0fd8d7] text-neutral-950 h-12 rounded-full px-6 font-medium hidden md:inline-flex items-center">
-                Sign up
+                Contact Us
               </button>
             </div>
           </div>
