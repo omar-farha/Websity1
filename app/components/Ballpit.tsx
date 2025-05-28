@@ -892,7 +892,7 @@ interface BallpitProps {
   className?: string;
   followCursor?: boolean;
   count?: number;
-  colors?: number[];
+  colors?: string[];
   ambientColor?: number;
   ambientIntensity?: number;
   lightIntensity?: number;
@@ -930,6 +930,11 @@ const Ballpit: React.FC<BallpitProps> = ({
     spheresInstanceRef.current = createBallpit(canvas, {
       followCursor,
       ...props,
+      colors: props.colors?.map((c) =>
+        typeof c === "string"
+          ? Number(c.startsWith("#") ? "0x" + c.slice(1) : c)
+          : c
+      ),
       materialParams: {
         metalness: 0.5,
         roughness: 0.5,
