@@ -75,7 +75,7 @@ export default function ServicesSection() {
   };
 
   return (
-    <section className="services relative py-12 md:py-20">
+    <section className="services relative py-12 md:py-20" id="services">
       <div className="container px-4 mx-auto">
         <motion.div
           className="services_titles"

@@ -40,7 +40,7 @@ export default function Faqs() {
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
 
   return (
-    <section className="py-24 px-4 sm:px-16">
+    <section className="py-24 px-4 sm:px-16" id="faqs">
       <div className="container">
         <motion.h2
           initial={{ opacity: 0, y: 20 }}

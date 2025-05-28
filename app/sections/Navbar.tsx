@@ -3,7 +3,7 @@ import logo from "@/app/assets/images/weblogo.png";
 
 const navLinks = [
   { label: "Home", href: "#" },
-  { label: "Features", href: "#features" },
+  { label: "Services", href: "#services" },
   { label: "Integrations", href: "#integrations" },
   { label: "FAQs", href: "#faqs" },
 ];
