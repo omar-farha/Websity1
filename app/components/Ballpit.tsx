@@ -298,7 +298,7 @@ class X {
 
         if (typeof mesh.material === "object") {
           Object.keys(mesh.material).forEach((key) => {
-            const matProp = mesh.material[key];
+            const matProp = (mesh.material as Record<string, unknown>)[key];
             if (
               matProp &&
               typeof matProp === "object" &&
@@ -551,7 +551,8 @@ class Y extends MeshPhysicalMaterial {
       if (this.onBeforeCompile2) this.onBeforeCompile2(shader);
     };
   }
-  onBeforeCompile2?: (shader: Record<string, unknown>) => void;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  onBeforeCompile2?: (shader: any) => void;
 }
 
 /* =========================================================
@@ -929,6 +930,13 @@ const Ballpit: React.FC<BallpitProps> = ({
     spheresInstanceRef.current = createBallpit(canvas, {
       followCursor,
       ...props,
+      materialParams: {
+        metalness: 0.5,
+        roughness: 0.5,
+        clearcoat: 1,
+        clearcoatRoughness: 0.15,
+        ...(props.materialParams ?? {}),
+      },
     });
 
     return () => {
