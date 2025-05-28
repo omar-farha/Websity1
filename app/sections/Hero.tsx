@@ -27,7 +27,7 @@ export default function Hero() {
             "#ffffff", // white for contrast
             "#1b1b1f", // deep neutral gray
           ]}
-          maxVelocity={1} // Higher maximum speed
+          maxVelocity={1.1} // Higher maximum speed
         />
       </div>
       <div className="container mx-auto relative ">
