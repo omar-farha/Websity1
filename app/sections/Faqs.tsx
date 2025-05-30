@@ -15,11 +15,6 @@ const faqs = [
       "Timelines vary depending on the project scope. Simple websites may take a few days, while more complex dashboards or e-commerce stores can take 1–3 weeks. We always provide a clear timeline before starting.",
   },
   {
-    question: "Do you only build websites from scratch?",
-    answer:
-      "No. In addition to building websites from the ground up, we also enhance, redesign, or troubleshoot existing websites to match your evolving business needs.",
-  },
-  {
     question: "Can you help me manage my Shopify store?",
     answer:
       "Absolutely! We offer expert Shopify support—from custom theme setup and design tweaks to performance optimization and store management.",

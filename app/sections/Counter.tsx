@@ -10,47 +10,56 @@ const Counter = () => {
   });
 
   return (
-    <div ref={ref} className="py-24">
-      {/* Container for consistent padding */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="lg:grid lg:grid-cols-7 lg:gap-20">
-          <div className="lg:col-span-4 flex justify-between lg:space-x-24 grow">
+    <div ref={ref} className="py-16 md:py-24 bg-neutral-950">
+      <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-10">
+        <div className="flex flex-col lg:flex-row gap-12 lg:gap-20 items-center">
+          {/* Stats Section */}
+          <div className="w-full lg:w-auto flex-1 grid grid-cols-3 gap-8 md:gap-12">
             <div className="text-center">
-              <h2 className="tracking-[-0.02rem] font-bold tabular-nums text-[#0fd8d7] text-4xl md:text-5xl">
+              <h2 className="font-bold tabular-nums text-[#0fd8d7] text-4xl md:text-5xl lg:text-6xl">
                 {inView ? <CountUp end={25} duration={2} /> : "0"}
+                <span className="text-[#0fd8d7]">+</span>
               </h2>
-              <p className="mt-2 text-md md:text-lg">Clients</p>
+              <p className="mt-3 text-neutral-300 text-sm md:text-base lg:text-lg">
+                Happy Clients
+              </p>
             </div>
+
             <div className="text-center">
-              <h2 className="tracking-[-0.02rem] font-bold tabular-nums text-[#0fd8d7] text-4xl md:text-5xl">
+              <h2 className="font-bold tabular-nums text-[#0fd8d7] text-4xl md:text-5xl lg:text-6xl">
                 {inView ? <CountUp end={60} duration={2} /> : "0"}
+                <span className="text-[#0fd8d7]">+</span>
               </h2>
-              <p className="mt-2 text-md md:text-lg">Websites Built</p>
+              <p className="mt-3 text-neutral-300 text-sm md:text-base lg:text-lg">
+                Projects Delivered
+              </p>
             </div>
+
             <div className="text-center">
-              <h2 className="tracking-[-0.02rem] font-bold tabular-nums text-[#0fd8d7] text-4xl md:text-5xl">
-                Meta
+              <h2 className="font-bold tabular-nums text-[#0fd8d7] text-4xl md:text-5xl lg:text-6xl">
+                {inView ? <CountUp end={100} duration={2} suffix="%" /> : "0%"}
               </h2>
-              <p className="mt-2 text-md md:text-lg">Certificate</p>
+              <p className="mt-3 text-neutral-300 text-sm md:text-base lg:text-lg">
+                Satisfaction Rate
+              </p>
             </div>
           </div>
 
-          <div className="lg:col-span-3 mt-10 lg:mt-0">
-            <p className="text-light text-lg leading-tight">
+          {/* Description Section */}
+          <div className="w-full lg:w-[40%] flex flex-col items-center lg:items-start">
+            <p className="text-neutral-400 text-center lg:text-left text-lg md:text-xl leading-relaxed">
               Websity is an open-source website builder that empowers developers
               and creators to build stunning, fast, and responsive websites with
               ease.
             </p>
-            <a
-              href="/pro"
-              className="inline-flex items-center justify-center mt-5 px-6 h-10 text-md font-bold rounded-full shadow-md text-[#0fd8d7] relative pro-button bg-neutral-900"
-            >
+
+            <button className="mt-8 px-8 py-3 bg-[#0fd8d7] hover:bg-[#0bc5c4] text-neutral-950 font-semibold rounded-full transition-all duration-300 flex items-center gap-2 group">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
-                className="w-5 h-5 mr-1"
+                className="w-5 h-5 group-hover:rotate-12 transition-transform"
                 fill="none"
                 viewBox="0 0 24 24"
-                strokeWidth={1.5}
+                strokeWidth={2}
                 stroke="currentColor"
               >
                 <path
@@ -60,7 +69,7 @@ const Counter = () => {
                 />
               </svg>
               Book Now
-            </a>
+            </button>
           </div>
         </div>
       </div>
