@@ -6,8 +6,9 @@ import { twMerge } from "tailwind-merge";
 import { AnimatePresence, motion } from "framer-motion";
 const navLinks = [
   { label: "Home", href: "#" },
-  { label: "Services", href: "#services" },
   { label: "Projects", href: "#projects" },
+  { label: "Services", href: "#services" },
+  { label: "Approach", href: "#Approach" },
   { label: "FAQs", href: "#faqs" },
 ];
 
@@ -15,7 +16,7 @@ export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   return (
     <>
-      <section className="py-4 lg:py-8 fixed w-full  top-0 z-50 ">
+      <section className="py-4 lg:py-8 fixed w-full  top-0 z-50">
         <div className="container sm:max-w-7xl md:max-w-4xl lg:max-w-5xl mx-auto md:px-8 px-6">
           <div className="border border-white/15 rounded-[27px] md:rounded-[37px] lg:rounded-full bg-neutral-950/70 backdrop-blur-xs">
             <div className="grid grid-cols-2 lg:grid-cols-3  p-2 px-4 md:pr-2 items-center ">

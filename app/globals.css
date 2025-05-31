@@ -35,7 +35,7 @@ body {
 .services_titles {
   position: relative;
   text-align: center;
-  margin-bottom: 2rem;
+  /* margin-bottom: 2rem; */
   max-width: 700px;
   width: 100%;
   margin-left: auto;
@@ -148,4 +148,30 @@ body {
     right: 3.5rem;
     font-size: 1.5rem;
   }
+}
+/* For WebKit browsers (Chrome, Safari, Edge) */
+::-webkit-scrollbar {
+  width: 12px; /* width of vertical scrollbar */
+  height: 12px; /* height of horizontal scrollbar */
+}
+
+::-webkit-scrollbar-track {
+  background: #104f4f; /* dark teal background for track */
+  border-radius: 6px;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: #0fd8d7; /* teal color for the draggable part */
+  border-radius: 6px;
+  border: 3px solid #104f4f; /* padding around thumb */
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: #08c3c2; /* darker teal on hover */
+}
+
+/* Firefox scrollbar styling */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #0fd8d7 #000000;
 }
