@@ -1,0 +1,53 @@
+{
+  "name": "websity",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev --turbopack",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "@emotion/react": "^11.14.0",
+    "@emotion/styled": "^11.14.0",
+    "@mui/material": "^7.3.11",
+    "@mui/material-nextjs": "^9.4.0",
+    "@mui/x-charts": "^9.13.0",
+    "@supabase/ssr": "^0.12.6",
+    "@supabase/supabase-js": "^2.109.0",
+    "@tsparticles/engine": "^3.8.1",
+    "@tsparticles/react": "^3.0.0",
+    "@tsparticles/slim": "^3.8.1",
+    "clsx": "^2.1.1",
+    "framer-motion": "^12.15.0",
+    "gsap": "^3.13.0",
+    "lucide-react": "^0.511.0",
+    "motion": "^12.15.0",
+    "next": "^15.5.25",
+    "react": "^19.0.0",
+    "react-countup": "^6.5.3",
+    "react-dom": "^19.0.0",
+    "react-intersection-observer": "^9.16.0",
+    "react-use-draggable-scroll": "^0.4.7",
+    "react-vertical-timeline-component": "^3.5.3",
+    "tailwind-merge": "^3.3.0",
+    "three": "^0.176.0",
+    "ws": "^8.21.3"
+  },
+  "devDependencies": {
+    "@eslint/eslintrc": "^3",
+    "@tailwindcss/postcss": "^4",
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "@types/react-lazyload": "^3.2.3",
+    "@types/react-vertical-timeline-component": "^3.3.6",
+    "@types/three": "^0.176.0",
+    "@types/ws": "^8.18.1",
+    "eslint": "^9",
+    "eslint-config-next": "^15.5.25",
+    "tailwindcss": "^4",
+    "typescript": "^5"
+  }
+}

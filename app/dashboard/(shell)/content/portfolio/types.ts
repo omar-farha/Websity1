@@ -1,0 +1,21 @@
+export type PortfolioProject = {
+  id: string;
+  slug: string;
+  title: string;
+  role: string;
+  year: number;
+  tagline: string;
+  description: string;
+  tags: string[];
+  stack: string[];
+  image_url: string;
+  live_url: string | null;
+  testimonial_name: string;
+  testimonial_role: string;
+  testimonial_rating: number;
+  testimonial_quote: string;
+  sort_order: number;
+  is_visible: boolean;
+  featured: boolean;
+  created_at: string;
+};

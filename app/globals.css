@@ -1,0 +1,113 @@
+@import "tailwindcss";
+
+/* This site is dark-only by design — every section hardcodes dark-theme
+   colors (bg-neutral-950, text-white, etc.) with no light variant, so the
+   background must stay dark regardless of the visitor's OS/browser color
+   scheme. Previously this only applied under `prefers-color-scheme: dark`,
+   which left a stray white background behind any section (e.g. Projects)
+   that didn't set its own explicit bg on a light-mode system. */
+:root {
+  --background: #0a0a0a;
+  --foreground: #ededed;
+  color-scheme: dark;
+}
+
+body {
+  color: var(--foreground);
+  background: var(--background);
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+/* The navbar is fixed and floats as a pill (it doesn't span the full
+   width), so jumping to an anchor link needs just enough top margin to
+   clear the pill itself — not the full layout gutter reserved for it,
+   which would leave a gap that lets the previous section's content peek
+   out from around the pill's rounded corners. */
+#projects,
+#Approach,
+#faqs,
+#contact {
+  scroll-margin-top: 84px;
+}
+
+@media (min-width: 1024px) {
+  #projects,
+  #Approach,
+  #faqs,
+  #contact {
+    scroll-margin-top: 112px;
+  }
+}
+
+@keyframes infinite-scroll {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+.animate-infinite-scroll {
+  animation: infinite-scroll 25s linear infinite;
+}
+.animate-infinite-scroll:hover {
+  animation-play-state: paused;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-infinite-scroll {
+    animation: none;
+  }
+}
+.services_titles {
+  position: relative;
+  text-align: center;
+  /* margin-bottom: 2rem; */
+  max-width: 700px;
+  width: 100%;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.services_titles h2 {
+  background: linear-gradient(to right, #0fd8d7 0, #ddd 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  display: inline-flex;
+  gap: 0.5rem;
+  margin-bottom: 0;
+}
+
+@media (min-width: 768px) {
+  .services_titles {
+    margin-bottom: 3rem;
+  }
+}
+
+/* For WebKit browsers (Chrome, Safari, Edge) */
+::-webkit-scrollbar {
+  width: 12px; /* width of vertical scrollbar */
+  height: 12px; /* height of horizontal scrollbar */
+}
+
+::-webkit-scrollbar-track {
+  background: #104f4f; /* dark teal background for track */
+  border-radius: 6px;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: #0fd8d7; /* teal color for the draggable part */
+  border-radius: 6px;
+  border: 3px solid #104f4f; /* padding around thumb */
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: #08c3c2; /* darker teal on hover */
+}
+
+/* Firefox scrollbar styling */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #0fd8d7 #000000;
+}
