@@ -13,12 +13,20 @@ import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogTitle from "@mui/material/DialogTitle";
 import IconButton from "@mui/material/IconButton";
+import InputLabel from "@mui/material/InputLabel";
+import FormControl from "@mui/material/FormControl";
+import MenuItem from "@mui/material/MenuItem";
+import Checkbox from "@mui/material/Checkbox";
+import ListItemText from "@mui/material/ListItemText";
+import OutlinedInput from "@mui/material/OutlinedInput";
+import Select, { type SelectChangeEvent } from "@mui/material/Select";
 import Stack from "@mui/material/Stack";
 import Switch from "@mui/material/Switch";
 import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import { ArrowDown, ArrowUp, Eye, EyeOff, Pencil, Plus, Star, Trash2 } from "lucide-react";
+import { PROJECT_CATEGORIES } from "@/app/lib/constants";
 import {
   deletePortfolioProject,
   reorderPortfolio,
@@ -142,6 +150,14 @@ function PortfolioFormDialog({
 }) {
   const [error, setError] = useState<string | undefined>();
   const [isPending, startTransition] = useTransition();
+  const [categories, setCategories] = useState<string[]>(
+    () => project?.tags.filter((t) => (PROJECT_CATEGORIES as readonly string[]).includes(t)) ?? []
+  );
+
+  function handleCategoriesChange(e: SelectChangeEvent<string[]>) {
+    const value = e.target.value;
+    setCategories(typeof value === "string" ? value.split(",") : value);
+  }
 
   function handleSubmit(formData: FormData) {
     startTransition(async () => {
@@ -183,7 +199,25 @@ function PortfolioFormDialog({
             <TextField name="role" label="Role" defaultValue={project?.role ?? "Design & Development"} fullWidth size="small" />
             <TextField name="year" label="Year" type="number" defaultValue={project?.year ?? new Date().getFullYear()} fullWidth size="small" />
           </Stack>
-          <TextField name="tags" label="Tags (comma separated)" defaultValue={project?.tags.join(", ")} fullWidth size="small" />
+          <FormControl fullWidth size="small">
+            <InputLabel id="portfolio-categories-label">Categories (shown as filters on the site)</InputLabel>
+            <Select
+              labelId="portfolio-categories-label"
+              multiple
+              value={categories}
+              onChange={handleCategoriesChange}
+              input={<OutlinedInput label="Categories (shown as filters on the site)" />}
+              renderValue={(selected) => selected.join(", ")}
+            >
+              {PROJECT_CATEGORIES.map((category) => (
+                <MenuItem key={category} value={category}>
+                  <Checkbox checked={categories.includes(category)} size="small" />
+                  <ListItemText primary={category} />
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+          <input type="hidden" name="tags" value={categories.join(",")} />
           <TextField name="stack" label="Tech stack (comma separated)" defaultValue={project?.stack.join(", ")} fullWidth size="small" />
           <TextField name="live_url" label="Live site URL" defaultValue={project?.live_url ?? ""} fullWidth size="small" />
 

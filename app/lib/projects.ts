@@ -18,6 +18,7 @@ export type Project = {
   stack: string[];
   image_url: string;
   live_url: string | null;
+  featured: boolean;
   testimonial: Testimonial;
 };
 
@@ -32,6 +33,7 @@ type ProjectRow = {
   stack: string[] | null;
   image_url: string;
   live_url: string | null;
+  featured: boolean | null;
   testimonial_name: string;
   testimonial_role: string;
   testimonial_rating: number;
@@ -50,6 +52,7 @@ function mapRow(row: ProjectRow): Project {
     stack: row.stack ?? [],
     image_url: row.image_url,
     live_url: row.live_url,
+    featured: row.featured ?? false,
     testimonial: {
       name: row.testimonial_name,
       role: row.testimonial_role,

@@ -11,9 +11,9 @@ import MenuItem from "@mui/material/MenuItem";
 import Stack from "@mui/material/Stack";
 import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
-import { Phone, Trash2 } from "lucide-react";
+import { Phone, Trash2, UserPlus } from "lucide-react";
 import { PROJECT_CATEGORIES } from "@/app/lib/constants";
-import { deleteLead, updateLeadStatus } from "./actions";
+import { convertLeadToClient, deleteLead, updateLeadStatus } from "./actions";
 import { LEAD_STATUSES, LEAD_STATUS_COLOR, type Lead, type LeadStatus } from "./types";
 
 function formatDateTime(iso: string) {
@@ -35,6 +35,7 @@ export default function LeadsView({
 }) {
   const [categoryFilter, setCategoryFilter] = useState("All");
   const [isPending, startTransition] = useTransition();
+  const [convertError, setConvertError] = useState<string | null>(null);
 
   const filtered = useMemo(
     () =>
@@ -73,6 +74,11 @@ export default function LeadsView({
       </Box>
 
       {loadError && <Alert severity="error" sx={{ mb: 2 }}>{loadError}</Alert>}
+      {convertError && (
+        <Alert severity="error" sx={{ mb: 2 }} onClose={() => setConvertError(null)}>
+          {convertError}
+        </Alert>
+      )}
 
       {filtered.length === 0 ? (
         <Box sx={{ border: "1px dashed", borderColor: "divider", borderRadius: 2, py: 8, textAlign: "center" }}>
@@ -137,6 +143,24 @@ export default function LeadsView({
                       size="small"
                       sx={{ display: { xs: "none", md: "inline-flex" } }}
                     />
+                    {lead.status !== "won" && lead.status !== "lost" && (
+                      <IconButton
+                        size="small"
+                        color="success"
+                        title="Convert to client"
+                        disabled={isPending}
+                        onClick={() => {
+                          if (confirm(`Convert "${lead.name}" into a client?`)) {
+                            startTransition(async () => {
+                              const result = await convertLeadToClient(lead);
+                              setConvertError(result?.error ?? null);
+                            });
+                          }
+                        }}
+                      >
+                        <UserPlus size={15} />
+                      </IconButton>
+                    )}
                     <IconButton
                       size="small"
                       color="error"
