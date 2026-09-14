@@ -415,6 +415,18 @@ create policy "admin_all_budgets"
   with check (auth.uid() is not null);
 
 -- ---------------------------------------------------------------------------
+-- notes can also attach to a lead (in addition to a client/client_project
+-- above) — added after `leads` so the foreign key can resolve on a fresh
+-- install run top-to-bottom.
+-- ---------------------------------------------------------------------------
+alter table notes add column if not exists lead_id uuid references leads(id) on delete cascade;
+
+alter table notes drop constraint if exists notes_has_a_parent;
+
+alter table notes add constraint notes_has_a_parent
+  check (client_id is not null or client_project_id is not null or lead_id is not null);
+
+-- ---------------------------------------------------------------------------
 -- record_payment / update_payment / delete_payment — the one place in this
 -- schema with real Postgres functions instead of plain inserts/updates.
 -- Recording a client payment must update the project's paid_amount AND

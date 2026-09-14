@@ -7,18 +7,22 @@ import Button from "@mui/material/Button";
 import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
 import Chip from "@mui/material/Chip";
+import Collapse from "@mui/material/Collapse";
 import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogTitle from "@mui/material/DialogTitle";
+import Divider from "@mui/material/Divider";
 import IconButton from "@mui/material/IconButton";
 import MenuItem from "@mui/material/MenuItem";
 import Stack from "@mui/material/Stack";
 import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
-import { Phone, Plus, Trash2, UserPlus } from "lucide-react";
+import { MessageSquare, Phone, Plus, Trash2, UserPlus } from "lucide-react";
 import { PROJECT_CATEGORIES } from "@/app/lib/constants";
 import { WEBSITE_TYPES } from "../clients/types";
+import NotesList from "../notes/NotesList";
+import type { Note } from "../notes/types";
 import { createLead, convertLeadToClient, deleteLead, updateLeadStatus } from "./actions";
 import { LEAD_STATUSES, LEAD_STATUS_COLOR, type Lead, type LeadStatus } from "./types";
 
@@ -34,15 +38,27 @@ function formatDateTime(iso: string) {
 
 export default function LeadsView({
   leads,
+  notesByLead,
   loadError,
 }: {
   leads: Lead[];
+  notesByLead: Record<string, Note[]>;
   loadError?: string;
 }) {
   const [categoryFilter, setCategoryFilter] = useState("All");
   const [isPending, startTransition] = useTransition();
   const [addOpen, setAddOpen] = useState(false);
   const [converting, setConverting] = useState<Lead | null>(null);
+  const [expanded, setExpanded] = useState<Set<string>>(new Set());
+
+  function toggleExpanded(id: string) {
+    setExpanded((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  }
 
   const filtered = useMemo(
     () =>
@@ -203,9 +219,28 @@ export default function LeadsView({
                   </Box>
                 </Box>
 
-                <Typography variant="caption" color="text.secondary" sx={{ display: "block", mt: 1.5 }}>
-                  Submitted {formatDateTime(lead.created_at)}
-                </Typography>
+                <Stack
+                  direction="row"
+                  justifyContent="space-between"
+                  alignItems="center"
+                  sx={{ mt: 1.5 }}
+                >
+                  <Typography variant="caption" color="text.secondary">
+                    Submitted {formatDateTime(lead.created_at)}
+                  </Typography>
+                  <Button
+                    size="small"
+                    startIcon={<MessageSquare size={13} />}
+                    onClick={() => toggleExpanded(lead.id)}
+                  >
+                    Comments{(notesByLead[lead.id]?.length ?? 0) > 0 ? ` (${notesByLead[lead.id].length})` : ""}
+                  </Button>
+                </Stack>
+
+                <Collapse in={expanded.has(lead.id)} unmountOnExit>
+                  <Divider sx={{ my: 1.5 }} />
+                  <NotesList notes={notesByLead[lead.id] ?? []} leadId={lead.id} />
+                </Collapse>
               </CardContent>
             </Card>
           ))}

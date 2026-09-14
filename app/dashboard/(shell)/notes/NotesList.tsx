@@ -24,10 +24,12 @@ export default function NotesList({
   notes,
   clientId,
   clientProjectId,
+  leadId,
 }: {
   notes: Note[];
   clientId?: string;
   clientProjectId?: string;
+  leadId?: string;
 }) {
   const [isPending, startTransition] = useTransition();
 
@@ -42,6 +44,7 @@ export default function NotesList({
       <form action={handleAdd}>
         {clientId && <input type="hidden" name="client_id" value={clientId} />}
         {clientProjectId && <input type="hidden" name="client_project_id" value={clientProjectId} />}
+        {leadId && <input type="hidden" name="lead_id" value={leadId} />}
         <Stack direction="row" spacing={1} alignItems="flex-start">
           <TextField
             name="body"
@@ -85,7 +88,7 @@ export default function NotesList({
                 size="small"
                 onClick={() =>
                   startTransition(() =>
-                    deleteNote(note.id, note.client_id, note.client_project_id)
+                    deleteNote(note.id, note.client_id, note.client_project_id, note.lead_id)
                   )
                 }
               >

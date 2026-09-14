@@ -12,9 +12,14 @@ function str(value: FormDataEntryValue | null): string | null {
   return trimmed ? trimmed : null;
 }
 
-function revalidateParents(clientId: string | null, clientProjectId: string | null) {
+function revalidateParents(
+  clientId: string | null,
+  clientProjectId: string | null,
+  leadId: string | null
+) {
   if (clientId) revalidatePath(`/dashboard/clients/${clientId}`);
   if (clientProjectId) revalidatePath(`/dashboard/projects/${clientProjectId}`);
+  if (leadId) revalidatePath("/dashboard/leads");
 }
 
 export async function addNote(
@@ -28,7 +33,8 @@ export async function addNote(
 
   const clientId = str(formData.get("client_id"));
   const clientProjectId = str(formData.get("client_project_id"));
-  if (!clientId && !clientProjectId) {
+  const leadId = str(formData.get("lead_id"));
+  if (!clientId && !clientProjectId && !leadId) {
     return { error: "Missing note owner." };
   }
 
@@ -36,6 +42,7 @@ export async function addNote(
   const { error } = await supabase.from("notes").insert({
     client_id: clientId,
     client_project_id: clientProjectId,
+    lead_id: leadId,
     body,
   });
 
@@ -43,22 +50,25 @@ export async function addNote(
     return { error: error.message };
   }
 
-  await logActivity(
-    clientProjectId ? "client_project" : "client",
-    (clientProjectId ?? clientId) as string,
-    body.length > 40 ? `${body.slice(0, 40)}…` : body,
-    "Note added"
-  );
+  if (clientId || clientProjectId) {
+    await logActivity(
+      clientProjectId ? "client_project" : "client",
+      (clientProjectId ?? clientId) as string,
+      body.length > 40 ? `${body.slice(0, 40)}…` : body,
+      "Note added"
+    );
+  }
 
-  revalidateParents(clientId, clientProjectId);
+  revalidateParents(clientId, clientProjectId, leadId);
 }
 
 export async function deleteNote(
   id: string,
   clientId: string | null,
-  clientProjectId: string | null
+  clientProjectId: string | null,
+  leadId: string | null = null
 ) {
   const supabase = createAdminClient();
   await supabase.from("notes").delete().eq("id", id);
-  revalidateParents(clientId, clientProjectId);
+  revalidateParents(clientId, clientProjectId, leadId);
 }
