@@ -3,17 +3,23 @@
 import { useMemo, useState, useTransition } from "react";
 import Alert from "@mui/material/Alert";
 import Box from "@mui/material/Box";
+import Button from "@mui/material/Button";
 import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
 import Chip from "@mui/material/Chip";
+import Dialog from "@mui/material/Dialog";
+import DialogActions from "@mui/material/DialogActions";
+import DialogContent from "@mui/material/DialogContent";
+import DialogTitle from "@mui/material/DialogTitle";
 import IconButton from "@mui/material/IconButton";
 import MenuItem from "@mui/material/MenuItem";
 import Stack from "@mui/material/Stack";
 import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
-import { Phone, Trash2, UserPlus } from "lucide-react";
+import { Phone, Plus, Trash2, UserPlus } from "lucide-react";
 import { PROJECT_CATEGORIES } from "@/app/lib/constants";
-import { convertLeadToClient, deleteLead, updateLeadStatus } from "./actions";
+import { WEBSITE_TYPES } from "../clients/types";
+import { createLead, convertLeadToClient, deleteLead, updateLeadStatus } from "./actions";
 import { LEAD_STATUSES, LEAD_STATUS_COLOR, type Lead, type LeadStatus } from "./types";
 
 function formatDateTime(iso: string) {
@@ -35,7 +41,8 @@ export default function LeadsView({
 }) {
   const [categoryFilter, setCategoryFilter] = useState("All");
   const [isPending, startTransition] = useTransition();
-  const [convertError, setConvertError] = useState<string | null>(null);
+  const [addOpen, setAddOpen] = useState(false);
+  const [converting, setConverting] = useState<Lead | null>(null);
 
   const filtered = useMemo(
     () =>
@@ -56,29 +63,29 @@ export default function LeadsView({
             {leads.length} {leads.length === 1 ? "submission" : "submissions"} from the site&apos;s contact form
           </Typography>
         </Box>
-        <TextField
-          select
-          size="small"
-          label="Category"
-          value={categoryFilter}
-          onChange={(e) => setCategoryFilter(e.target.value)}
-          sx={{ minWidth: 180 }}
-        >
-          <MenuItem value="All">All categories</MenuItem>
-          {PROJECT_CATEGORIES.map((category) => (
-            <MenuItem key={category} value={category}>
-              {category}
-            </MenuItem>
-          ))}
-        </TextField>
+        <Stack direction="row" spacing={1.5} alignItems="center">
+          <TextField
+            select
+            size="small"
+            label="Category"
+            value={categoryFilter}
+            onChange={(e) => setCategoryFilter(e.target.value)}
+            sx={{ minWidth: 180 }}
+          >
+            <MenuItem value="All">All categories</MenuItem>
+            {PROJECT_CATEGORIES.map((category) => (
+              <MenuItem key={category} value={category}>
+                {category}
+              </MenuItem>
+            ))}
+          </TextField>
+          <Button variant="contained" startIcon={<Plus size={16} />} onClick={() => setAddOpen(true)}>
+            Add lead
+          </Button>
+        </Stack>
       </Box>
 
       {loadError && <Alert severity="error" sx={{ mb: 2 }}>{loadError}</Alert>}
-      {convertError && (
-        <Alert severity="error" sx={{ mb: 2 }} onClose={() => setConvertError(null)}>
-          {convertError}
-        </Alert>
-      )}
 
       {filtered.length === 0 ? (
         <Box sx={{ border: "1px dashed", borderColor: "divider", borderRadius: 2, py: 8, textAlign: "center" }}>
@@ -148,15 +155,7 @@ export default function LeadsView({
                         size="small"
                         color="success"
                         title="Convert to client"
-                        disabled={isPending}
-                        onClick={() => {
-                          if (confirm(`Convert "${lead.name}" into a client?`)) {
-                            startTransition(async () => {
-                              const result = await convertLeadToClient(lead);
-                              setConvertError(result?.error ?? null);
-                            });
-                          }
-                        }}
+                        onClick={() => setConverting(lead)}
                       >
                         <UserPlus size={15} />
                       </IconButton>
@@ -212,6 +211,131 @@ export default function LeadsView({
           ))}
         </Stack>
       )}
+
+      {addOpen && <LeadFormDialog onClose={() => setAddOpen(false)} />}
+      {converting && <ConvertLeadDialog lead={converting} onClose={() => setConverting(null)} />}
     </Box>
+  );
+}
+
+function LeadFormDialog({ onClose }: { onClose: () => void }) {
+  const [error, setError] = useState<string | undefined>();
+  const [isPending, startTransition] = useTransition();
+
+  function handleSubmit(formData: FormData) {
+    startTransition(async () => {
+      const result = await createLead(undefined, formData);
+      if (result?.error) {
+        setError(result.error);
+      } else {
+        onClose();
+      }
+    });
+  }
+
+  return (
+    <Dialog open onClose={onClose} fullWidth maxWidth="xs">
+      <form action={handleSubmit}>
+        <DialogTitle>Add lead</DialogTitle>
+        <DialogContent sx={{ display: "flex", flexDirection: "column", gap: 2, pt: 1 }}>
+          <Typography variant="body2" color="text.secondary">
+            For a lead that came in outside the site&apos;s contact form — a call, WhatsApp, or referral.
+          </Typography>
+          <TextField name="name" label="Name" required autoFocus fullWidth size="small" />
+          <TextField name="phone" label="Phone" required fullWidth size="small" />
+          <TextField name="category" label="Category" select required defaultValue="" fullWidth size="small">
+            {PROJECT_CATEGORIES.map((category) => (
+              <MenuItem key={category} value={category}>
+                {category}
+              </MenuItem>
+            ))}
+          </TextField>
+          <TextField name="budget" label="Expected budget" fullWidth size="small" />
+          <TextField name="monthly_clients" label="Clients handled per month (approx.)" fullWidth size="small" />
+          <TextField name="timeline" label="Expected timeline" fullWidth size="small" />
+          {error && (
+            <Typography variant="body2" color="error">
+              {error}
+            </Typography>
+          )}
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={onClose}>Cancel</Button>
+          <Button type="submit" variant="contained" disabled={isPending}>
+            {isPending ? "Saving…" : "Save"}
+          </Button>
+        </DialogActions>
+      </form>
+    </Dialog>
+  );
+}
+
+function ConvertLeadDialog({ lead, onClose }: { lead: Lead; onClose: () => void }) {
+  const [error, setError] = useState<string | undefined>();
+  const [isPending, startTransition] = useTransition();
+
+  function handleSubmit(formData: FormData) {
+    startTransition(async () => {
+      const result = await convertLeadToClient(undefined, formData);
+      if (result?.error) {
+        setError(result.error);
+      } else {
+        onClose();
+      }
+    });
+  }
+
+  return (
+    <Dialog open onClose={onClose} fullWidth maxWidth="xs">
+      <form action={handleSubmit}>
+        <input type="hidden" name="lead_id" value={lead.id} />
+        <DialogTitle>Convert to client</DialogTitle>
+        <DialogContent sx={{ display: "flex", flexDirection: "column", gap: 2, pt: 1 }}>
+          <Typography variant="body2" color="text.secondary">
+            Creates a client from this lead. Optionally start their first project at the same time.
+          </Typography>
+          <TextField name="name" label="Client name" defaultValue={lead.name} required autoFocus fullWidth size="small" />
+          <TextField name="phone" label="Phone" defaultValue={lead.phone} required fullWidth size="small" />
+
+          <Typography variant="subtitle2" sx={{ mt: 1 }}>
+            First project (optional)
+          </Typography>
+          <TextField name="project_name" label="Project name" fullWidth size="small" />
+          <TextField name="website_type" label="Website type" select defaultValue="" fullWidth size="small">
+            <MenuItem value="">
+              <em>Not set</em>
+            </MenuItem>
+            {WEBSITE_TYPES.map((t) => (
+              <MenuItem key={t.value} value={t.value}>
+                {t.label}
+              </MenuItem>
+            ))}
+          </TextField>
+          <Stack direction="row" spacing={2}>
+            <TextField name="cost" label="Cost" type="number" fullWidth size="small" />
+            <TextField
+              name="due_date"
+              label="Due date"
+              type="date"
+              fullWidth
+              size="small"
+              slotProps={{ inputLabel: { shrink: true } }}
+            />
+          </Stack>
+
+          {error && (
+            <Typography variant="body2" color="error">
+              {error}
+            </Typography>
+          )}
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={onClose}>Cancel</Button>
+          <Button type="submit" variant="contained" color="success" disabled={isPending}>
+            {isPending ? "Converting…" : "Convert"}
+          </Button>
+        </DialogActions>
+      </form>
+    </Dialog>
   );
 }
