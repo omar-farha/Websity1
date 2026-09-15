@@ -368,16 +368,15 @@ create policy "admin_delete_approach_steps"
 -- ---------------------------------------------------------------------------
 -- leads — submissions from the public site's contact/start-a-project form.
 -- Public visitors can only insert; only the dashboard (service-role key,
--- bypasses RLS) can read, update, or delete. Keep the `category` list in
--- sync with PROJECT_CATEGORIES in app/lib/constants.ts.
+-- bypasses RLS) can read, update, or delete. `category` is free text
+-- validated at the application layer against the admin-managed `categories`
+-- table below (see supabase/migrations/016_categories.sql).
 -- ---------------------------------------------------------------------------
 create table if not exists leads (
   id uuid primary key default gen_random_uuid(),
   name text not null,
   phone text not null,
-  category text not null check (
-    category in ('Brands', 'Celebrities', 'Initiatives', 'Gym & Sportswear', 'Systems', 'Clinics')
-  ),
+  category text not null,
   budget text not null,
   monthly_clients text not null,
   timeline text not null,
@@ -536,3 +535,44 @@ create policy "admin_update_project_images"
 create policy "admin_delete_project_images"
   on storage.objects for delete
   using (bucket_id = 'project-images' and auth.role() = 'authenticated');
+
+-- ---------------------------------------------------------------------------
+-- categories — the admin-managed business types (Brands, Gym & Sportswear,
+-- Clinics…) used to filter the public projects showcase and tag leads.
+-- Publicly readable so the site's contact form and projects filter can read
+-- it directly; only the dashboard (service-role key) can write to it.
+-- ---------------------------------------------------------------------------
+create table if not exists categories (
+  id uuid primary key default gen_random_uuid(),
+  name text not null unique,
+  sort_order int not null default 0,
+  created_at timestamptz not null default now()
+);
+
+alter table categories enable row level security;
+
+create policy "public_read_categories"
+  on categories for select
+  using (true);
+
+create policy "admin_write_categories"
+  on categories for insert
+  with check (auth.uid() is not null);
+
+create policy "admin_update_categories"
+  on categories for update
+  using (auth.uid() is not null)
+  with check (auth.uid() is not null);
+
+create policy "admin_delete_categories"
+  on categories for delete
+  using (auth.uid() is not null);
+
+insert into categories (name, sort_order) values
+  ('Brands', 0),
+  ('Celebrities', 1),
+  ('Initiatives', 2),
+  ('Gym & Sportswear', 3),
+  ('Systems', 4),
+  ('Clinics', 5)
+on conflict (name) do nothing;

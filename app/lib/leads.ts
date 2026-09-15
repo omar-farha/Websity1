@@ -1,7 +1,6 @@
 "use server";
 
 import { createClient } from "@/app/lib/supabase/server";
-import { PROJECT_CATEGORIES } from "@/app/lib/constants";
 
 export type LeadFormState = { error?: string; success?: boolean };
 
@@ -24,11 +23,17 @@ export async function submitLead(
     return { error: "Please fill in every field." };
   }
 
-  if (!(PROJECT_CATEGORIES as readonly string[]).includes(category)) {
+  const supabase = await createClient();
+
+  const { data: validCategory } = await supabase
+    .from("categories")
+    .select("name")
+    .eq("name", category)
+    .maybeSingle();
+  if (!validCategory) {
     return { error: "Please choose a valid category." };
   }
 
-  const supabase = await createClient();
   const { error } = await supabase.from("leads").insert({
     name,
     phone,

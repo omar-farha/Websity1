@@ -3,7 +3,6 @@
 import { revalidatePath } from "next/cache";
 import { createAdminClient } from "@/app/lib/supabase/admin";
 import { logActivity } from "@/app/lib/activityLog";
-import { PROJECT_CATEGORIES } from "@/app/lib/constants";
 import type { WebsiteType } from "../clients/types";
 import type { LeadStatus } from "./types";
 
@@ -49,11 +48,18 @@ export async function createLead(
 
   if (!name) return { error: "Name is required." };
   if (!phone) return { error: "Phone is required." };
-  if (!category || !(PROJECT_CATEGORIES as readonly string[]).includes(category)) {
+  if (!category) return { error: "Choose a category." };
+
+  const supabase = createAdminClient();
+  const { data: validCategory } = await supabase
+    .from("categories")
+    .select("name")
+    .eq("name", category)
+    .maybeSingle();
+  if (!validCategory) {
     return { error: "Choose a valid category." };
   }
 
-  const supabase = createAdminClient();
   const { error } = await supabase.from("leads").insert({
     name,
     phone,

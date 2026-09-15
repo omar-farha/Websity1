@@ -1,5 +1,5 @@
 import Approach from "./sections/Approach";
-import ContactUs from "./sections/ContactUs";
+import Contact from "./sections/Contact";
 import Counter from "./sections/Counter";
 import Faqs from "./sections/Faqs";
 import Hero from "./sections/Hero";
@@ -17,7 +17,7 @@ export default function Home() {
       <Approach />
       <TapeSection />
       <Faqs />
-      <ContactUs />
+      <Contact />
     </div>
   );
 }

@@ -19,7 +19,6 @@ import Stack from "@mui/material/Stack";
 import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
 import { MessageSquare, Phone, Plus, Trash2, UserPlus } from "lucide-react";
-import { PROJECT_CATEGORIES } from "@/app/lib/constants";
 import { WEBSITE_TYPES } from "../clients/types";
 import NotesList from "../notes/NotesList";
 import type { Note } from "../notes/types";
@@ -39,10 +38,12 @@ function formatDateTime(iso: string) {
 export default function LeadsView({
   leads,
   notesByLead,
+  categories,
   loadError,
 }: {
   leads: Lead[];
   notesByLead: Record<string, Note[]>;
+  categories: string[];
   loadError?: string;
 }) {
   const [categoryFilter, setCategoryFilter] = useState("All");
@@ -89,7 +90,7 @@ export default function LeadsView({
             sx={{ minWidth: 180 }}
           >
             <MenuItem value="All">All categories</MenuItem>
-            {PROJECT_CATEGORIES.map((category) => (
+            {categories.map((category) => (
               <MenuItem key={category} value={category}>
                 {category}
               </MenuItem>
@@ -247,13 +248,13 @@ export default function LeadsView({
         </Stack>
       )}
 
-      {addOpen && <LeadFormDialog onClose={() => setAddOpen(false)} />}
+      {addOpen && <LeadFormDialog categories={categories} onClose={() => setAddOpen(false)} />}
       {converting && <ConvertLeadDialog lead={converting} onClose={() => setConverting(null)} />}
     </Box>
   );
 }
 
-function LeadFormDialog({ onClose }: { onClose: () => void }) {
+function LeadFormDialog({ categories, onClose }: { categories: string[]; onClose: () => void }) {
   const [error, setError] = useState<string | undefined>();
   const [isPending, startTransition] = useTransition();
 
@@ -279,7 +280,7 @@ function LeadFormDialog({ onClose }: { onClose: () => void }) {
           <TextField name="name" label="Name" required autoFocus fullWidth size="small" />
           <TextField name="phone" label="Phone" required fullWidth size="small" />
           <TextField name="category" label="Category" select required defaultValue="" fullWidth size="small">
-            {PROJECT_CATEGORIES.map((category) => (
+            {categories.map((category) => (
               <MenuItem key={category} value={category}>
                 {category}
               </MenuItem>

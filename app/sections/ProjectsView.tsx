@@ -6,7 +6,6 @@ import Image from "next/image";
 import Link from "next/link";
 import { ArrowUpRight, ChevronLeft, ChevronRight } from "lucide-react";
 import type { Project } from "@/app/lib/projects";
-import { PROJECT_CATEGORIES } from "@/app/lib/constants";
 import { Spotlight } from "@/app/components/Spotlight";
 
 function trackSpotlight(e: MouseEvent<HTMLElement>) {
@@ -51,11 +50,16 @@ const filterItemVariants = {
   visible: { opacity: 1, y: 0, transition: { duration: 0.4 } },
 };
 
-const categories = ["All", ...PROJECT_CATEGORIES];
-
 const AUTOPLAY_MS = 2000;
 
-export default function ProjectsView({ projects }: { projects: Project[] }) {
+export default function ProjectsView({
+  projects,
+  categories: categoryNames,
+}: {
+  projects: Project[];
+  categories: string[];
+}) {
+  const categories = ["All", ...categoryNames];
   const [active, setActive] = useState("All");
   const [index, setIndex] = useState(0);
   const [direction, setDirection] = useState(1);

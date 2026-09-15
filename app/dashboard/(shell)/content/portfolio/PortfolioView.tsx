@@ -26,7 +26,6 @@ import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import { ArrowDown, ArrowUp, Eye, EyeOff, Pencil, Plus, Star, Trash2 } from "lucide-react";
-import { PROJECT_CATEGORIES } from "@/app/lib/constants";
 import {
   deletePortfolioProject,
   reorderPortfolio,
@@ -37,9 +36,11 @@ import type { PortfolioProject } from "./types";
 
 export default function PortfolioView({
   projects,
+  categories,
   loadError,
 }: {
   projects: PortfolioProject[];
+  categories: string[];
   loadError?: string;
 }) {
   const [addOpen, setAddOpen] = useState(false);
@@ -135,23 +136,25 @@ export default function PortfolioView({
         )}
       </Stack>
 
-      {addOpen && <PortfolioFormDialog onClose={() => setAddOpen(false)} />}
-      {editing && <PortfolioFormDialog project={editing} onClose={() => setEditing(null)} />}
+      {addOpen && <PortfolioFormDialog categories={categories} onClose={() => setAddOpen(false)} />}
+      {editing && <PortfolioFormDialog categories={categories} project={editing} onClose={() => setEditing(null)} />}
     </Box>
   );
 }
 
 function PortfolioFormDialog({
   project,
+  categories: allCategories,
   onClose,
 }: {
   project?: PortfolioProject;
+  categories: string[];
   onClose: () => void;
 }) {
   const [error, setError] = useState<string | undefined>();
   const [isPending, startTransition] = useTransition();
   const [categories, setCategories] = useState<string[]>(
-    () => project?.tags.filter((t) => (PROJECT_CATEGORIES as readonly string[]).includes(t)) ?? []
+    () => project?.tags.filter((t) => allCategories.includes(t)) ?? []
   );
 
   function handleCategoriesChange(e: SelectChangeEvent<string[]>) {
@@ -209,7 +212,7 @@ function PortfolioFormDialog({
               input={<OutlinedInput label="Categories (shown as filters on the site)" />}
               renderValue={(selected) => selected.join(", ")}
             >
-              {PROJECT_CATEGORIES.map((category) => (
+              {allCategories.map((category) => (
                 <MenuItem key={category} value={category}>
                   <Checkbox checked={categories.includes(category)} size="small" />
                   <ListItemText primary={category} />

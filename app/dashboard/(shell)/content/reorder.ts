@@ -7,7 +7,7 @@ import { createAdminClient } from "@/app/lib/supabase/admin";
 // buttons instead of drag-and-drop, since there's no DnD library in this
 // project and a handful of rows per content type doesn't need one.
 export async function swapSortOrder(
-  table: "projects" | "services" | "faqs" | "approach_steps",
+  table: "projects" | "services" | "faqs" | "approach_steps" | "categories",
   items: { id: string; sort_order: number }[],
   id: string,
   direction: "up" | "down"

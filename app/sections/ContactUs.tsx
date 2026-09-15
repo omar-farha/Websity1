@@ -7,9 +7,8 @@ import Linkedin from "../assets/images/vecteezy_linkedin-png-icon_16716470.png";
 import Whats from "../assets/images/whatsap5.png";
 import Insta from "../assets/images/pngwing.com.png";
 import { submitLead, type LeadFormState } from "@/app/lib/leads";
-import { PROJECT_CATEGORIES } from "@/app/lib/constants";
 
-export default function ContactUs() {
+export default function ContactUs({ categories }: { categories: string[] }) {
   const [isPending, startTransition] = useTransition();
   const [result, setResult] = useState<LeadFormState>({});
   const [formKey, setFormKey] = useState(0);
@@ -128,7 +127,7 @@ export default function ContactUs() {
               <option value="" disabled>
                 What kind of project is this?
               </option>
-              {PROJECT_CATEGORIES.map((category) => (
+              {categories.map((category) => (
                 <option key={category} value={category}>
                   {category}
                 </option>

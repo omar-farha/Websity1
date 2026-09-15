@@ -4,7 +4,7 @@ import Card from "@mui/material/Card";
 import CardActionArea from "@mui/material/CardActionArea";
 import CardContent from "@mui/material/CardContent";
 import Typography from "@mui/material/Typography";
-import { Images, HelpCircle, Route } from "lucide-react";
+import { Images, HelpCircle, Route, Tags } from "lucide-react";
 
 const sections = [
   {
@@ -12,6 +12,12 @@ const sections = [
     icon: Images,
     title: "Portfolio",
     description: "The case studies shown on the public site's homepage and project pages.",
+  },
+  {
+    href: "/dashboard/content/categories",
+    icon: Tags,
+    title: "Categories",
+    description: "The business types (Brands, Gym & Sportswear, Clinics…) used to filter projects and tag leads.",
   },
   {
     href: "/dashboard/content/faqs",
