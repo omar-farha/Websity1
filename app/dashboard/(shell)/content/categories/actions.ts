@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { createAdminClient } from "@/app/lib/supabase/admin";
-import { swapSortOrder } from "../reorder";
+import { nextSortOrder, swapSortOrder } from "../reorder";
 
 export type CategoryFormState = { error?: string } | undefined;
 
@@ -54,12 +54,9 @@ export async function saveCategory(
       }
     }
   } else {
-    const { count } = await supabase
-      .from("categories")
-      .select("*", { count: "exact", head: true });
     const { error } = await supabase
       .from("categories")
-      .insert({ name, sort_order: count ?? 0 });
+      .insert({ name, sort_order: await nextSortOrder("categories") });
     if (error) {
       return { error: error.message.includes("duplicate") ? "That category already exists." : error.message };
     }

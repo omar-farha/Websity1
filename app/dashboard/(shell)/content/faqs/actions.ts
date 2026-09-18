@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { createAdminClient } from "@/app/lib/supabase/admin";
-import { swapSortOrder } from "../reorder";
+import { nextSortOrder, swapSortOrder } from "../reorder";
 
 export type FaqFormState = { error?: string } | undefined;
 
@@ -38,7 +38,7 @@ export async function saveFaq(
 
   const { error } = id
     ? await supabase.from("faqs").update(payload).eq("id", id)
-    : await supabase.from("faqs").insert(payload);
+    : await supabase.from("faqs").insert({ ...payload, sort_order: await nextSortOrder("faqs") });
 
   if (error) {
     return { error: error.message };

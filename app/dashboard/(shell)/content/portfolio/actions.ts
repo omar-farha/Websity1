@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { createAdminClient } from "@/app/lib/supabase/admin";
-import { swapSortOrder } from "../reorder";
+import { nextSortOrder, swapSortOrder } from "../reorder";
 
 export type PortfolioFormState = { error?: string } | undefined;
 
@@ -93,7 +93,7 @@ export async function savePortfolioProject(
 
   const { error } = id
     ? await supabase.from("projects").update(payload).eq("id", id)
-    : await supabase.from("projects").insert(payload);
+    : await supabase.from("projects").insert({ ...payload, sort_order: await nextSortOrder("projects") });
 
   if (error) {
     return { error: error.message };

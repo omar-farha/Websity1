@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { createAdminClient } from "@/app/lib/supabase/admin";
-import { swapSortOrder } from "../reorder";
+import { nextSortOrder, swapSortOrder } from "../reorder";
 
 export type ApproachFormState = { error?: string } | undefined;
 
@@ -51,7 +51,7 @@ export async function saveApproachStep(
 
   const { error } = id
     ? await supabase.from("approach_steps").update(payload).eq("id", id)
-    : await supabase.from("approach_steps").insert(payload);
+    : await supabase.from("approach_steps").insert({ ...payload, sort_order: await nextSortOrder("approach_steps") });
 
   if (error) {
     return { error: error.message };
